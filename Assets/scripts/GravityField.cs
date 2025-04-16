@@ -5,13 +5,15 @@ using UnityEngine;
 public class GravityField : MonoBehaviour {
     [SerializeField]private Vector3 g = new(0f, -9.81f, 0f);
     [SerializeField]private bool active = false;
+    [SerializeField]private int collisionsSize = 1024;
     private float cooldown = 0;
     private Collider field = null;
 
-    Collider[] collisions = new Collider[100];
+    Collider[] collisions;
 
     private void Start () {
-        field ??= gameObject.GetComponent<Collider>();
+        field = gameObject.GetComponent<Collider>();
+        collisions ??= new Collider[collisionsSize];
     }
 
     // Update is called once per frame
