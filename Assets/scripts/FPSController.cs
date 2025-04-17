@@ -12,30 +12,41 @@ public class FPSController : MonoBehaviour
     public float jumpForce = 300f;
 
     [Header("Коэфицикент трения")]
-    [Tooltip("Ограничевает максимальную скорость")]
+    [Tooltip("Ограничевает максимальную скорость на земле")]
+    [Range(0, 1)]
     public float alpha = 1.0f;
+    [Tooltip("Ограничевает максимальную скорость в воздухе")]
+    [Range(0, 1)]
+    public float beta = 1.0f;
 
-    float cameraSpeed = 1000f;
+    [Header("Максимальный предел обзора")]
+    [Tooltip("Насколько бошку поднять-то")]
+    [Range(10, 85)]
+    public float maxAngle = 80f;
+
+    readonly float cameraSpeed = 1000f;
 
     private Rigidbody rb;
+    private new Collider collider;
+    private Transform cameraTransform;
 
     private void Start () {
         rb = GetComponent<Rigidbody>();
         rb.useGravity = false;
+
+        collider = GetComponent<Collider>();
+
+        cameraTransform = Camera.main.transform;
     }
 
     private void Update () {
-        HandleMouse();        
+        HandleMouse();
     }
 
-    private void HandleMouse () {
-        // Кэшируем ссылки на камеру и её трансформ для производительности
-        Camera mainCamera = Camera.main;
-        Transform cameraTransform = mainCamera.transform;
-        
+    private void HandleMouse () { 
         // Получаем значения ввода мыши
-        float mouseX = Input.GetAxis("Mouse X") * cameraSpeed * Time.deltaTime;
-        float mouseY = Input.GetAxis("Mouse Y") * cameraSpeed * Time.deltaTime;
+        float mouseX =  Input.GetAxis("Mouse X") * cameraSpeed * Time.deltaTime;
+        float mouseY = -Input.GetAxis("Mouse Y") * cameraSpeed * Time.deltaTime;
         
         // Вращение по горизонтали (ось Y)
         cameraTransform.RotateAround(
@@ -44,29 +55,42 @@ public class FPSController : MonoBehaviour
             mouseX
         );
         
-        // Вращение по вертикали (ось right камеры)
-        // Добавляем ограничение угла, чтобы избежать переворота камеры
-        Vector3 right = cameraTransform.right;
-
-
-        float newVerticalAngle = Vector3.Angle(
+        float angle = Vector3.SignedAngle(
             cameraTransform.forward, 
-            new Vector3(cameraTransform.position.x, 0, cameraTransform.position.z)
-            );
+            Vector3.Scale(cameraTransform.forward, new Vector3(1, 0, 1)),
+            cameraTransform.right
+        );
         
-        float verticalRotation = -mouseY;
-        
-        // Ограничиваем угол вращения по вертикали (например, от -80 до 80 градусов)
-        if (newVerticalAngle > 80f && newVerticalAngle < 80f) {
-            cameraTransform.RotateAround(
-                cameraTransform.position, 
-                right, 
-                verticalRotation
-            );
-        }
+        if (angle >  maxAngle) mouseY = Mathf.Max(0, mouseY);
+        if (angle < -maxAngle) mouseY = Mathf.Min(0, mouseY);
+
+        cameraTransform.RotateAround(
+            cameraTransform.position, 
+            cameraTransform.right,
+            mouseY
+        );
     }
 
     private void FixedUpdate () {
+        if (IsGrounded()) {
+            MoveGrounded();
+        } else {
+            MoveNongrounded();
+        }
+    }
+
+    private bool IsGrounded () {
+        return Physics.Raycast(
+            new Ray(
+                rb.transform.position,
+                -rb.transform.up
+            ), 
+            out _,
+            2 // TODO: убрать магические константы
+        );
+    }
+
+    private void MoveNongrounded () {
         Vector3 moveDirection = 
             Input.GetAxis("Vertical")   * Camera.main.transform.forward + 
             Input.GetAxis("Horizontal") * Camera.main.transform.right;
@@ -74,7 +98,18 @@ public class FPSController : MonoBehaviour
         if (moveDirection.sqrMagnitude > 1) moveDirection.Normalize();
 
         rb.AddForce(moveForce * moveDirection, ForceMode.Acceleration);
-        rb.AddForce(- alpha * rb.velocity.magnitude * rb.velocity, ForceMode.Acceleration);
+        rb.AddForce(- beta * rb.velocity.magnitude * rb.velocity, ForceMode.Acceleration);
+    }
+
+    private void MoveGrounded () {
+        Vector3 moveDirection = 
+            Input.GetAxis("Vertical")   * Vector3.Scale(Camera.main.transform.forward, new Vector3(1, 0, 1)).normalized + 
+            Input.GetAxis("Horizontal") * Camera.main.transform.right;
+
+        if (moveDirection.sqrMagnitude > 1) moveDirection.Normalize();
+
+        rb.AddForce(moveForce * moveDirection, ForceMode.Acceleration);
+        rb.AddForce(- alpha * rb.velocity, ForceMode.Acceleration);
     }
 
     private void DrawCross (Vector3 pos, float size) {
