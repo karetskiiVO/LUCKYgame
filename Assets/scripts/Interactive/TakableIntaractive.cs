@@ -51,6 +51,6 @@ public class TakableIntaractive : BasicInteractive {
         collider.enabled = true;
         transform.localScale = Vector3.one;
 
-        rb.AddForce(camera.transform.forward * 1000f);
+        rb.AddForce(camera.transform.forward * 500f);
     }
 }
