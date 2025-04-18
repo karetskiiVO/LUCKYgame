@@ -3,11 +3,27 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class SlotInteractive : BasicInteractive {
-    public override void Release () {
-        throw new System.NotImplementedException();
+    FPSController fPSController;
+
+    public override void InteractiveStart() {
+            
     }
 
     public override void Take (GameObject player, Camera camera) {
-        throw new System.NotImplementedException();
+        if (fPSController != null) return;
+
+        fPSController = player.GetComponent<FPSController>();
+        fPSController.enabled = false;
+    }
+    
+    public override void Release () {
+        if (fPSController == null) return;
+
+        fPSController.enabled = true;
+        fPSController = null;
+    }
+
+    public override void Act () {
+        
     }
 }

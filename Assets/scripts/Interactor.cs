@@ -8,12 +8,13 @@ public class Interactor : MonoBehaviour {
     private float interactiveDistance = 1.6f;
     
     private Transform cameraTransform;
-    GameObject coursor;
+    GameObject cursor;
     
     private BasicInteractive currInteractive = null;
 
     void Start () {
-        coursor = GameObject.Find("coursor");
+        //Cursor.lockState = CursorMode.
+        cursor = GameObject.Find("cursor");
         cameraTransform = Camera.main.transform;
     }
 
@@ -46,16 +47,16 @@ public class Interactor : MonoBehaviour {
             ) &&
             (hit.collider.includeLayers & LayerMask.GetMask("Interactive")) != 0
         ) {
-            coursor.SetActive(true);
+            cursor.SetActive(true);
 
             if (Input.GetKeyUp(KeyCode.Mouse1)) {
                 currInteractive = hit.collider.gameObject.GetComponent<BasicInteractive>();
                 currInteractive.Take(gameObject, Camera.main);
                 Debug.Log("aboba");
-                coursor.SetActive(false);
+                cursor.SetActive(false);
             }
         } else {
-            coursor.SetActive(false);
+            cursor.SetActive(false);
         }
     }
 }

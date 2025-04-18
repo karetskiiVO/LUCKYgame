@@ -86,7 +86,7 @@ public class FPSController : MonoBehaviour
                 -rb.transform.up
             ), 
             out _,
-            2 // TODO: убрать магические константы
+            1.2f // TODO: убрать магические константы
         );
     }
 

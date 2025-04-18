@@ -28,24 +28,20 @@ public class GravityField : MonoBehaviour {
 
     private void FixedUpdate () {
         var count = Physics.OverlapBoxNonAlloc(field.bounds.center, field.bounds.extents / 2, collisions);
-
+        
         for (var i = 0; i < count; i++) {
             if (collisions[i] == gameObject) continue;
+
             var rigidbody = collisions[i].attachedRigidbody;
             if (rigidbody == null) continue;
 
             if (active) {
-                rigidbody.AddForce(rigidbody.mass * g);
+                rigidbody.AddForce(g, ForceMode.Acceleration);
             } else {
                 if ((collisions[i].includeLayers & LayerMask.GetMask("RandomFlow")) == 0) continue;
 
-                rigidbody.AddForce(
-                    0.25f * rigidbody.mass * Random.onUnitSphere             
-                );
-
-                rigidbody.AddTorque(
-                    0.25f * rigidbody.inertiaTensor.magnitude * Random.onUnitSphere
-                );
+                rigidbody.AddForce(0.25f * Random.onUnitSphere, ForceMode.Acceleration);
+                rigidbody.AddTorque(0.25f * rigidbody.inertiaTensor.magnitude * Random.onUnitSphere);
             }
         }
     }
