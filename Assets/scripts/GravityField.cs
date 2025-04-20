@@ -6,7 +6,6 @@ public class GravityField : MonoBehaviour {
     [SerializeField]private Vector3 g = new(0f, -9.81f, 0f);
     [SerializeField]private bool active = false;
     [SerializeField]private int collisionsSize = 1024;
-    private float cooldown = 0;
     private Collider field = null;
 
     Collider[] collisions;
@@ -16,19 +15,13 @@ public class GravityField : MonoBehaviour {
         collisions ??= new Collider[collisionsSize];
     }
 
-    // Update is called once per frame
-    private void Update () {
-        if (Input.GetButton("Jump") && !(cooldown > 0)) {
-            active = !active;
-            cooldown = 0.2f;
-        }
-
-        cooldown = Mathf.Max(0, cooldown - Time.deltaTime);
+    public void ChangeMode () {
+        active = !active;
     }
 
     private void FixedUpdate () {
-        var count = Physics.OverlapBoxNonAlloc(field.bounds.center, field.bounds.extents / 2, collisions);
-        
+        var count = Physics.OverlapBoxNonAlloc(field.bounds.center, field.bounds.extents, collisions, Quaternion.identity);
+
         for (var i = 0; i < count; i++) {
             if (collisions[i] == gameObject) continue;
 
@@ -45,4 +38,19 @@ public class GravityField : MonoBehaviour {
             }
         }
     }
+
+    public void FlushToPoint (Vector3 point) {
+        var count = Physics.OverlapBoxNonAlloc(field.bounds.center, field.bounds.extents, collisions, Quaternion.identity);
+
+        for (var i = 0; i < count; i++) {
+            if (collisions[i] == gameObject) continue;
+
+            var rigidbody = collisions[i].attachedRigidbody;
+            if (rigidbody == null) continue;
+
+            rigidbody.AddForce((rigidbody.gameObject.transform.position - point).normalized * 10f, ForceMode.VelocityChange);
+        }
+    }
+
+    public bool isActive { get => active; }
 }

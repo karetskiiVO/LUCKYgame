@@ -12,7 +12,7 @@ public abstract class BasicInteractive : MonoBehaviour {
 
     public virtual void InteractiveStart () {}
 
-    public abstract void Take (GameObject player, Camera camera);
+    public abstract BasicInteractive Take (GameObject player, Camera camera);
     public abstract void Release ();
 
     public virtual void Act () {}

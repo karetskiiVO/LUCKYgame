@@ -19,56 +19,11 @@ public class FPSController : MonoBehaviour
     [Range(0, 1)]
     public float beta = 1.0f;
 
-    [Header("Максимальный предел обзора")]
-    [Tooltip("Насколько бошку поднять-то")]
-    [Range(10, 85)]
-    public float maxAngle = 80f;
-
-    readonly float cameraSpeed = 1000f;
-
     private Rigidbody rb;
-    private new Collider collider;
-    private Transform cameraTransform;
 
     private void Start () {
         rb = GetComponent<Rigidbody>();
         rb.useGravity = false;
-
-        collider = GetComponent<Collider>();
-
-        cameraTransform = Camera.main.transform;
-    }
-
-    private void Update () {
-        HandleMouse();
-    }
-
-    private void HandleMouse () { 
-        // Получаем значения ввода мыши
-        float mouseX =  Input.GetAxis("Mouse X") * cameraSpeed * Time.deltaTime;
-        float mouseY = -Input.GetAxis("Mouse Y") * cameraSpeed * Time.deltaTime;
-        
-        // Вращение по горизонтали (ось Y)
-        cameraTransform.RotateAround(
-            cameraTransform.position, 
-            Vector3.up, 
-            mouseX
-        );
-        
-        float angle = Vector3.SignedAngle(
-            cameraTransform.forward, 
-            Vector3.Scale(cameraTransform.forward, new Vector3(1, 0, 1)),
-            cameraTransform.right
-        );
-        
-        if (angle >  maxAngle) mouseY = Mathf.Max(0, mouseY);
-        if (angle < -maxAngle) mouseY = Mathf.Min(0, mouseY);
-
-        cameraTransform.RotateAround(
-            cameraTransform.position, 
-            cameraTransform.right,
-            mouseY
-        );
     }
 
     private void FixedUpdate () {

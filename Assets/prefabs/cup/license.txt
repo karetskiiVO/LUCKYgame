@@ -1,0 +1,11 @@
+Model Information:
+* title:	A cool little cup just for fun :)
+* source:	https://sketchfab.com/3d-models/a-cool-little-cup-just-for-fun-afd10a0435184da58cb5f391c0499b14
+* author:	Synty Studios (https://sketchfab.com/syntystudios)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "A cool little cup just for fun :)" (https://sketchfab.com/3d-models/a-cool-little-cup-just-for-fun-afd10a0435184da58cb5f391c0499b14) by Synty Studios (https://sketchfab.com/syntystudios) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

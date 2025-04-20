@@ -24,8 +24,8 @@ public class TakableIntaractive : BasicInteractive {
 
     private GameObject player;
     private new Camera camera;
-    public override void Take (GameObject player, Camera camera) {
-        if (this.player != null) return;
+    public override BasicInteractive Take (GameObject player, Camera camera) {
+        if (this.player != null) return null;
         prevParent = transform.parent;
 
         this.player = player;
@@ -36,8 +36,10 @@ public class TakableIntaractive : BasicInteractive {
         transform.position = camera.ScreenToWorldPoint(
             Vector3.Scale(screenCoords + Vector3.one / 2f, new Vector3(Screen.width, Screen.height, 1))
         );
-        transform.localScale = Vector3.one * scale;
+        transform.localScale = transform.localScale * scale;
         transform.parent = camera.transform;
+    
+        return this;
     }
 
     public override void Release () {
@@ -49,8 +51,8 @@ public class TakableIntaractive : BasicInteractive {
         transform.parent = prevParent;
         rb.isKinematic = false;
         collider.enabled = true;
-        transform.localScale = Vector3.one;
+        transform.localScale = transform.localScale / scale;
 
-        rb.AddForce(camera.transform.forward * 500f, ForceMode.Impulse);
+        rb.AddForce(camera.transform.forward * 7f, ForceMode.Impulse);
     }
 }
